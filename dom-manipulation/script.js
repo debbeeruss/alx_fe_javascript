@@ -50,12 +50,9 @@ const quotes = [
     }
   }
   
-  // Initialize the display by showing a random quote
-  document.addEventListener('DOMContentLoaded', () => {
-    // Show a random quote initially
-    showRandomQuote();
-  
-    // Create the form to add a new quote dynamically
+  // Function to create the "Add Quote" form dynamically
+  function createAddQuoteForm() {
+    // Create the form elements
     const formContainer = document.createElement('div');
     formContainer.innerHTML = `
       <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
@@ -65,5 +62,14 @@ const quotes = [
     
     // Append the form to the body or a specific container
     document.body.appendChild(formContainer);
+  }
+  
+  // Initialize the display by showing a random quote
+  document.addEventListener('DOMContentLoaded', () => {
+    // Show a random quote initially
+    showRandomQuote();
+  
+    // Call the function to create the "Add Quote" form
+    createAddQuoteForm();
   });
   
