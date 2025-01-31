@@ -18,6 +18,25 @@ function showRandomQuote() {
   quoteDisplay.textContent = `"${randomQuote.text}" - Category: ${randomQuote.category}`;
 }
 
+// Function to add a new quote
+function addQuote() {
+  const newQuoteText = document.getElementById("newQuoteText").value;
+  const newQuoteCategory = document.getElementById("newQuoteCategory").value;
+
+  if (newQuoteText && newQuoteCategory) {
+    // Create a new quote object and add it to the quotes array
+    const newQuote = { text: newQuoteText, category: newQuoteCategory };
+    quotes.push(newQuote);
+
+    // Clear the input fields
+    document.getElementById("newQuoteText").value = '';
+    document.getElementById("newQuoteCategory").value = '';
+
+    alert('New quote added!');
+  } else {
+    alert('Please enter both a quote and a category!');
+  }
+}
 
 // Function to add a new quote with a category
 function addQuote(quoteText, category) {
