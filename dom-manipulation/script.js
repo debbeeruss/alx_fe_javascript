@@ -179,37 +179,47 @@ if (randomQuoteButton) {
   randomQuoteButton.addEventListener('click', displayRandomQuote);
 }
 
-async function fetchServerData() {
+// Simulating server URL (using JSONPlaceholder for demo)
+const serverUrl = "https://jsonplaceholder.typicode.com/posts";
+
+// Function to simulate fetching quotes data from the server
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch(serverUrl);
     const serverQuotes = await response.json();
     return serverQuotes.map(quote => ({
       id: quote.id,
       text: quote.title,  // Using 'title' as the quote text for demo
-      category: 'Uncategorized'  // Placeholder for category
+      category: 'Uncategorized'  // Placeholder for category (JSONPlaceholder doesn't have category)
     }));
   } catch (error) {
     console.error("Error fetching data from server:", error);
   }
 }
 
+// Function to sync local data with the server (check for changes)
 async function syncData() {
-  const serverQuotes = await fetchServerData();
+  const serverQuotes = await fetchQuotesFromServer();  // Fetch quotes from server
 
+  // Compare local quotes with server quotes and resolve conflicts
   serverQuotes.forEach(serverQuote => {
     const localQuoteIndex = quotes.findIndex(localQuote => localQuote.id === serverQuote.id);
 
     if (localQuoteIndex === -1) {
+      // If the quote doesn't exist locally, add it
       quotes.push(serverQuote);
     } else if (quotes[localQuoteIndex].text !== serverQuote.text) {
+      // If there is a conflict (different text), resolve it by using the server's data
       quotes[localQuoteIndex] = serverQuote;
-      displayConflictResolvedMessage(serverQuote.id);  // Show conflict resolution message
+      displayConflictResolvedMessage(serverQuote.id);  // Show message to the user
     }
   });
 
-  await postLocalChangesToServer();  // Sync local changes to the server
+  // Optionally, you can post any changes to the server here (e.g., new quotes added)
+  await postLocalChangesToServer();
 }
 
+// Function to post local changes to the server
 async function postLocalChangesToServer() {
   quotes.forEach(async (quote) => {
     const response = await fetch(serverUrl, {
@@ -222,10 +232,51 @@ async function postLocalChangesToServer() {
   });
 }
 
+// Function to display a conflict resolution message to the user
 function displayConflictResolvedMessage(quoteId) {
   const messageElement = document.getElementById("message");
   messageElement.textContent = `Conflict resolved: Quote with ID ${quoteId} updated from the server's version.`;
   messageElement.style.color = "red";
 }
 
+// Function to display a random quote
+function showRandomQuote() {
+  const randomIndex = Math.floor(Math.random() * quotes.length);
+  const randomQuote = quotes[randomIndex];
+  const quoteDisplay = document.getElementById("quoteDisplay");
+  quoteDisplay.textContent = `"${randomQuote.text}" - Category: ${randomQuote.category}`;
+}
+
+// Function to add a new quote
+function addQuote() {
+  const newQuoteText = document.getElementById("newQuoteText").value;
+  const newQuoteCategory = document.getElementById("newQuoteCategory").value;
+
+  if (newQuoteText && newQuoteCategory) {
+    const newQuote = { 
+      id: quotes.length + 1,  // Generate new ID
+      text: newQuoteText, 
+      category: newQuoteCategory 
+    };
+    quotes.push(newQuote);
+    showRandomQuote();  // Show new quote
+    alert('New quote added!');
+  } else {
+    alert('Please enter both a quote and a category!');
+  }
+}
+
+// Sync data periodically (every 10 seconds for this example)
 setInterval(syncData, 10000);  // Sync data every 10 seconds
+
+// Initialize the page
+function init() {
+  // Display a random quote on page load
+  showRandomQuote();
+
+  // Setup a periodic check for syncing data with the server
+  syncData();  // Initial data sync on page load
+}
+
+// Run the initialization function on page load
+window.onload = init;
