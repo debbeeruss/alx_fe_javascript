@@ -7,6 +7,18 @@ function saveQuotes() {
   populateCategories();  // Update categories after saving quotes
 }
 
+// Function to show a random quote
+function showRandomQuote() {
+  // Pick a random quote from the array
+  const randomIndex = Math.floor(Math.random() * quotes.length); // Generate a random index
+  const randomQuote = quotes[randomIndex]; // Get the random quote
+
+  // Display the random quote in the #quoteDisplay div
+  const quoteDisplay = document.getElementById("quoteDisplay");
+  quoteDisplay.textContent = `"${randomQuote.text}" - Category: ${randomQuote.category}`;
+}
+
+
 // Function to add a new quote with a category
 function addQuote(quoteText, category) {
   const newQuote = {
