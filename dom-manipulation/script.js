@@ -67,6 +67,20 @@ function filterQuotes() {
   displayQuotes(selectedCategory);  // Display quotes based on the selected category
 }
 
+// Function to display a random quote from the quotes array
+function displayRandomQuote() {
+  if (quotes.length === 0) {
+    alert("No quotes available.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * quotes.length); // Generate a random index
+  const randomQuote = quotes[randomIndex]; // Get the random quote
+
+  const quoteDisplay = document.getElementById('quoteDisplay'); // The element where random quote will be shown
+  quoteDisplay.textContent = `"${randomQuote.text}" - ${randomQuote.category} - Added on ${randomQuote.dateAdded}`;
+}
+
 // Function to export quotes to a JSON file
 function exportToJson() {
   const jsonBlob = new Blob([JSON.stringify(quotes, null, 2)], { type: 'application/json' });
@@ -100,3 +114,9 @@ function importFromJsonFile(event) {
 // Initialize the app
 populateCategories();  // Populate the category filter dropdown
 displayQuotes();  // Display all quotes initially
+
+// Adding event listener for displaying a random quote when button is clicked
+const randomQuoteButton = document.getElementById('randomQuoteButton');
+if (randomQuoteButton) {
+  randomQuoteButton.addEventListener('click', displayRandomQuote);
+}
