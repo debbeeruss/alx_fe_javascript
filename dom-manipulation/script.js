@@ -280,3 +280,24 @@ function init() {
 
 // Run the initialization function on page load
 window.onload = init;
+
+// Function to synchronize local quotes with server quotes and handle conflicts
+async function syncQuotes() {
+  const serverQuotes = await fetchQuotesFromServer();  // Fetch quotes from the server
+// Compare local quotes with server quotes and resolve conflicts
+serverQuotes.forEach(serverQuote => {
+  const localQuoteIndex = quotes.findIndex(localQuote => localQuote.id === serverQuote.id);
+
+  if (localQuoteIndex === -1) {
+    // If the quote doesn't exist locally, add it
+    quotes.push(serverQuote);
+  } else if (quotes[localQuoteIndex].text !== serverQuote.text) {
+    // If there is a conflict (different text), resolve it by using the server's data
+    quotes[localQuoteIndex] = serverQuote;
+    displayConflictResolvedMessage(serverQuote.id);  // Show message to the user
+  }
+});
+
+// Optionally, you can post any changes to the server here (e.g., new quotes added)
+await postLocalChangesToServer();
+}
