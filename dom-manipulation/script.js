@@ -301,3 +301,17 @@ serverQuotes.forEach(serverQuote => {
 // Optionally, you can post any changes to the server here (e.g., new quotes added)
 await postLocalChangesToServer();
 }
+
+// Display sync success message
+displaySyncMessage(); // Show "Quotes synced with server!" message
+
+
+// Function to display a sync success message
+function displaySyncMessage() {
+  const messageElement = document.getElementById("message");
+  messageElement.textContent = "Quotes synced with server!";
+  messageElement.style.color = "green";  // Green text to indicate success
+  setTimeout(() => {
+    messageElement.textContent = ""; // Clear the message after 5 seconds
+  }, 5000);
+}
