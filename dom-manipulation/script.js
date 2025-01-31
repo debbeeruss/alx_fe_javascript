@@ -178,3 +178,54 @@ const randomQuoteButton = document.getElementById('randomQuoteButton');
 if (randomQuoteButton) {
   randomQuoteButton.addEventListener('click', displayRandomQuote);
 }
+
+async function fetchServerData() {
+  try {
+    const response = await fetch(serverUrl);
+    const serverQuotes = await response.json();
+    return serverQuotes.map(quote => ({
+      id: quote.id,
+      text: quote.title,  // Using 'title' as the quote text for demo
+      category: 'Uncategorized'  // Placeholder for category
+    }));
+  } catch (error) {
+    console.error("Error fetching data from server:", error);
+  }
+}
+
+async function syncData() {
+  const serverQuotes = await fetchServerData();
+
+  serverQuotes.forEach(serverQuote => {
+    const localQuoteIndex = quotes.findIndex(localQuote => localQuote.id === serverQuote.id);
+
+    if (localQuoteIndex === -1) {
+      quotes.push(serverQuote);
+    } else if (quotes[localQuoteIndex].text !== serverQuote.text) {
+      quotes[localQuoteIndex] = serverQuote;
+      displayConflictResolvedMessage(serverQuote.id);  // Show conflict resolution message
+    }
+  });
+
+  await postLocalChangesToServer();  // Sync local changes to the server
+}
+
+async function postLocalChangesToServer() {
+  quotes.forEach(async (quote) => {
+    const response = await fetch(serverUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(quote)
+    });
+    const postedQuote = await response.json();
+    console.log('Posted quote to server:', postedQuote);
+  });
+}
+
+function displayConflictResolvedMessage(quoteId) {
+  const messageElement = document.getElementById("message");
+  messageElement.textContent = `Conflict resolved: Quote with ID ${quoteId} updated from the server's version.`;
+  messageElement.style.color = "red";
+}
+
+setInterval(syncData, 10000);  // Sync data every 10 seconds
